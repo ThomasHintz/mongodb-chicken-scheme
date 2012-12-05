@@ -1,9 +1,9 @@
 (import chicken scheme)
-(use http-client json intarweb uri-common)
+(use http-client medea intarweb uri-common)
 
 ;;;;;;;;;;;;;;;; utilities ;;;;;;;;;;;;;;;;;;;;
-(define (->json-string vector)
-  (with-output-to-string (lambda () (json-write vector))))
+(define (->json-string json-struct)
+  (with-output-to-string (lambda () (write-json json-struct))))
 
 ;;;;;;;;;;;;;;; parameters ;;;;;;;;;;;;;;;;;;;;
 (define endpoint (make-parameter "http://localhost:27080"))
@@ -27,8 +27,8 @@
                (if (safe) '((safe . 1)) '())
                parameters)
        #f)
-   json-read))
-
+   read-json))
+(mongo-req action: "_hello")
 (define (connect #!key server connection-name)
   (parameterize
    ((database #f))
@@ -71,7 +71,7 @@
    parameters: `((cmd . ,(->json-string cmd)))))
 
 ;;; for testing
-(database "clienttest")
-(connect server: "http://localhost:27017")
-(insert "test" '#((name . "stuff")))
-(ensure-index "test" '#((name . 1)))
+;(database "clienttest")
+;(connect server: "http://localhost:27017")
+;(insert "test" '#((name . "stuff")))
+;(ensure-index "test" '#((name . 1)))
