@@ -62,9 +62,16 @@
 
 (define (mdb-find resource #!key criteria fields sort skip limit explain batch-size)
   (mdb-req
-   action: (string-append "_find?criteria="
-                          (uri-encode-string (json->string criteria)))
-   method: 'GET path: resource))
+   method: 'GET path: resource
+   action: (string-append
+            "_find"
+            (fold (lambda (e o)
+                    (string-append o "&" (car e) (uri-encode-string (json->string (cadr e)))))
+                  "?"
+                  (filter (lambda (e) (cadr e))
+                          `(("criteria" ,criteria) ("fields" ,fields) ("sort" ,sort)
+                            ("skip" ,skip) ("limit" ,limit) ("explain" ,explain)
+                            ("batch_size" ,batch-size)))))))
 
 (define (mdb-cmd resource cmd)
   (mdb-req
